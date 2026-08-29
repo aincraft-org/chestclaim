@@ -128,7 +128,7 @@ tasks.test {
 tasks {
     runServer {
         minecraftVersion("26.2")
-        // Pinned Modrinth version ID for Bolt 1.2.22, compatible with Paper 26.2.
+        // Bolt 1.2.22: Modrinth version j3QcPcdy, SHA-256 4d51111981c51492aae89d93ad3fb4a5691bfee60397073a16fe40f0734cd21d.
         downloadPlugins {
             modrinth("bolt", "j3QcPcdy")
         }
