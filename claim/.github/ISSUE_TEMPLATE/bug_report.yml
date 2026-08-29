@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible ChestClaim problem
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: input
+    id: minecraft-version
+    attributes:
+      label: Minecraft and Paper version
+      description: Include the exact server version.
+      placeholder: Paper 26.2.x
+    validations:
+      required: true
+  - type: input
+    id: plugin-version
+    attributes:
+      label: ChestClaim version
+      placeholder: 2026.08.29-SNAPSHOT
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Give the smallest sequence that demonstrates the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and logs
+      description: Remove secrets and personal data before posting logs.
+    validations:
+      required: true

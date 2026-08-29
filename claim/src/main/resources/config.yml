@@ -1,0 +1,6 @@
+database:
+  file: claim.db
+
+protection-providers:
+  order:
+    - bolt

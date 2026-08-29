@@ -1,0 +1,9 @@
+name: ChestClaim
+version: '${version}'
+main: org.aincraft.chestclaim.ClaimPlugin
+api-version: '26.2'
+description: Durable automatic rewards and protected-chest returns
+softdepend:
+  - LWC
+  - Bolt
+  - LockettePro

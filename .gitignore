@@ -1,0 +1,19 @@
+# Gradle and build output
+**/.gradle/
+**/build/
+
+# Paper and server runtime state
+**/run/
+**/logs/
+**/world/
+**/worlds/
+eula.txt
+server.properties
+
+# Local databases and editor files
+*.db
+*.db-shm
+*.db-wal
+.idea/
+*.iml
+.DS_Store
