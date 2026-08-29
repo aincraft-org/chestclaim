@@ -1,0 +1,8 @@
+database:
+  file: claim.db
+
+protection-providers:
+  order:
+    - lwc
+    - bolt
+    - lockettepro
