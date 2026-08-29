@@ -40,19 +40,19 @@
 - Produces the Gradle project used by every later task.
 - Establishes Java package root `org.aincraft.chestclaim`.
 
-- [ ] **Step 1: Create the settings and pinned build configuration**
+- [x] **Step 1: Create the settings and pinned build configuration**
 
 Use `rootProject.name = "claim"`, Java 25, Paper API `io.papermc.paper:paper-api:26.2.build.+`, run-paper 3.1.0, Spotless 8.10.0/google-java-format 1.36.1, Checkstyle 13.11.0, PMD 7.26.0, SpotBugs 6.5.10/4.9.7, JUnit 5, and HikariCP 7.0.2. Configure `jar` to include HikariCP without including compile-only Paper or provider APIs. Configure `check` to depend on all static-analysis tasks and `runServer` for Paper 26.2.
 
-- [ ] **Step 2: Add plugin metadata and empty default configuration**
+- [x] **Step 2: Add plugin metadata and empty default configuration**
 
 `plugin.yml` shall declare `ChestClaim`, main class `org.aincraft.chestclaim.ClaimPlugin`, version expansion `${version}`, quoted `api-version: '26.2'`, description, and `softdepend: [LWC, Bolt, LockettePro]`. `config.yml` shall contain the ordered provider IDs `lwc`, `bolt`, `lockettepro` and the SQLite filename `claim.db`.
 
-- [ ] **Step 3: Add the wrapper from the pinned local development-network checkout**
+- [x] **Step 3: Add the wrapper from the pinned local development-network checkout**
 
 Copy the tracked wrapper scripts and `gradle/wrapper` files from `.agents/skills/development-network/` into `claim/`. Do not copy server state or build output.
 
-- [ ] **Step 4: Verify the scaffold before implementation**
+- [x] **Step 4: Verify the scaffold before implementation**
 
 Run `cd claim && ./gradlew tasks --no-daemon`. Expected: Gradle 9.7.1 starts and lists `test`, `check`, `jar`, and `runServer`.
 
@@ -78,15 +78,15 @@ Run `cd claim && ./gradlew tasks --no-daemon`. Expected: Gradle 9.7.1 starts and
 - `ProtectionResolver.resolveOwner(Block)` produces a definitive `UUID` or throws `ProtectionOwnerResolutionException`.
 - `ClaimRepository` consumes serialized claims and exposes synchronous JDBC-shaped methods; callers own the async executor boundary.
 
-- [ ] **Step 1: Write resolver tests first**
+- [x] **Step 1: Write resolver tests first**
 
 Cover: one provider resolves a UUID; same-owner results from multiple providers are accepted; no providers/no owner throws; provider failure is wrapped; conflicting UUIDs throw. Use small fake providers and a `Proxy` implementing Bukkit `Block` so tests do not need MockBukkit.
 
-- [ ] **Step 2: Write service contract tests first**
+- [x] **Step 2: Write service contract tests first**
 
 Cover: valid queue calls the repository; null UUID, null/air item, and blank source perform no write; a known locked-chest owner queues source `locked-chest-return`; an unresolved owner throws before repository invocation. Use a fake repository, fake resolver, and codec; use `new ItemStack(Material.CHEST)` only as an input value.
 
-- [ ] **Step 3: Run the focused tests to verify RED**
+- [x] **Step 3: Run the focused tests to verify RED**
 
 Run `cd claim && ./gradlew test --tests '*ProtectionResolverTest' --tests '*ClaimServiceContractTest' --no-daemon`. Expected: compilation/test failure because the implementation classes and service implementation are not yet present. If the failure is a test typo or dependency error, fix the test setup until the missing-behavior failure is clear.
 
@@ -108,23 +108,23 @@ Run `cd claim && ./gradlew test --tests '*ProtectionResolverTest' --tests '*Clai
 - Adapters expose IDs `lwc`, `bolt`, and `lockettepro`.
 - `ProtectionProviderDiscovery.discover()` returns providers in config order and ignores absent optional plugins.
 
-- [ ] **Step 1: Add a failing reflective-adapter test**
+- [x] **Step 1: Add a failing reflective-adapter test**
 
 Create fake plugin/protection objects where `findProtection(Block)` returns a protection object whose `getOwner()` returns a UUID. Assert the LWC adapter returns that UUID. Add a fake protected object whose owner is blank and assert `ProtectionProviderException`.
 
-- [ ] **Step 2: Run the adapter test to verify RED**
+- [x] **Step 2: Run the adapter test to verify RED**
 
 Run `cd claim && ./gradlew test --tests '*ReflectiveProtectionProviderTest' --no-daemon`. Expected: compilation failure because the adapter is not implemented.
 
-- [ ] **Step 3: Implement the reflection boundary**
+- [x] **Step 3: Implement the reflection boundary**
 
 Support lookup methods accepting `Block`, `Location`, or `World,int,int,int`; support provider manager roots such as `getProtectionManager`, `getManager`, and `getAPI`; support owner values of `UUID`, `Player`, `OfflinePlayer`, and UUID strings. A name is accepted only through an existing/cached Bukkit profile with a non-null UUID and `hasPlayedBefore()`/online evidence; otherwise throw. Include LockettePro static API class `org.yi.acru.bukkit.LocketteProAPI` as a candidate and never fail plugin enable when a class/plugin is absent.
 
-- [ ] **Step 4: Implement resolver fail-closed behavior**
+- [x] **Step 4: Implement resolver fail-closed behavior**
 
 Inspect every discovered provider, collect definitive owners, accept zero-or-more equal UUIDs, and throw for zero owners, provider errors, or conflicting owners. Preserve the original cause in the typed exception.
 
-- [ ] **Step 5: Run resolver and adapter tests to verify GREEN**
+- [x] **Step 5: Run resolver and adapter tests to verify GREEN**
 
 Run `cd claim && ./gradlew test --tests '*ProtectionResolverTest' --tests '*ReflectiveProtectionProviderTest' --no-daemon`. Expected: all focused tests pass.
 
@@ -144,19 +144,19 @@ Run `cd claim && ./gradlew test --tests '*ProtectionResolverTest' --tests '*Refl
 - `retain(PendingClaim, UUID, List<byte[]>)` returns the row to pending and inserts additional leftovers in one transaction.
 - `release(long, UUID)` returns a failed decode to pending.
 
-- [ ] **Step 1: Write repository contract tests against an in-memory fake**
+- [x] **Step 1: Write repository contract tests against an in-memory fake**
 
 Test claim/complete token ownership, retain behavior with one and multiple serialized leftovers, and release behavior. Keep the tests independent of a local server or external database.
 
-- [ ] **Step 2: Run repository contract tests to verify RED**
+- [x] **Step 2: Run repository contract tests to verify RED**
 
 Run `cd claim && ./gradlew test --tests '*ClaimRepositoryContractTest' --no-daemon`. Expected: failure because the fake contract implementation/test support is not complete.
 
-- [ ] **Step 3: Implement the schema and repository**
+- [x] **Step 3: Implement the schema and repository**
 
 Use `pending_claims(id INTEGER PRIMARY KEY AUTOINCREMENT, player_uuid TEXT NOT NULL, item_blob BLOB NOT NULL, source TEXT NOT NULL, created_at INTEGER NOT NULL, state TEXT NOT NULL DEFAULT 'PENDING', delivery_token TEXT, claimed_at INTEGER)`, an index on `(player_uuid,state,id)`, a five-minute stale-delivery reset, one Hikari SQLite connection, and prepared statements with try-with-resources.
 
-- [ ] **Step 4: Run repository tests and compile**
+- [x] **Step 4: Run repository tests and compile**
 
 Run `cd claim && ./gradlew test --tests '*ClaimRepositoryContractTest' --no-daemon`. Expected: PASS.
 
@@ -176,19 +176,19 @@ Run `cd claim && ./gradlew test --tests '*ClaimRepositoryContractTest' --no-daem
 - `ClaimDeliveryService.deliver(Player)` owns the DB-async/main-thread-DB-async join pipeline.
 - `ClaimJoinListener` invokes delivery and logs failures without sending player messages.
 
-- [ ] **Step 1: Write delivery tests first**
+- [x] **Step 1: Write delivery tests first**
 
 Cover a fully accepted stack marks the row complete; a partial insertion retains exactly the leftovers; an empty inventory leaves the row pending; decode failure releases the row and never calls inventory; database transitions receive the same delivery token. Use direct executors and dynamic proxies for `Player`/`Inventory`.
 
-- [ ] **Step 2: Run delivery tests to verify RED**
+- [x] **Step 2: Run delivery tests to verify RED**
 
 Run `cd claim && ./gradlew test --tests '*ClaimDeliveryServiceTest' --no-daemon`. Expected: compilation failure because delivery implementation is absent.
 
-- [ ] **Step 3: Implement the codec and service**
+- [x] **Step 3: Implement the codec and service**
 
 Use `ItemStack.serializeAsBytes()`/`ItemStack.deserializeBytes(byte[])`. Validate queue input before encoding. `returnLockedChest` resolves first and calls `queueReward(owner, chestItem, "locked-chest-return")`. The join path claims rows asynchronously, performs only inventory operations on the supplied main-thread executor, then completes/retains/releases rows asynchronously. Never drop leftovers or message the player.
 
-- [ ] **Step 4: Run service and delivery tests to verify GREEN**
+- [x] **Step 4: Run service and delivery tests to verify GREEN**
 
 Run `cd claim && ./gradlew test --tests '*ClaimServiceContractTest' --tests '*ClaimDeliveryServiceTest' --no-daemon`. Expected: PASS.
 
@@ -211,19 +211,19 @@ Run `cd claim && ./gradlew test --tests '*ClaimServiceContractTest' --tests '*Cl
 - `ClaimPlugin` unregisters the service and closes the repository/executor on disable.
 - Provider discovery reads the ordered IDs from `config.yml` and never turns missing providers into startup failure.
 
-- [ ] **Step 1: Add lifecycle smoke-test scaffolding**
+- [x] **Step 1: Add lifecycle smoke-test scaffolding**
 
 Add a test or test helper that verifies the production wiring passes a service registration and listener registration only after repository initialization. Keep the runtime-specific assertions small; the Paper startup smoke is the authoritative integration check.
 
-- [ ] **Step 2: Implement enable/disable wiring**
+- [x] **Step 2: Implement enable/disable wiring**
 
 Create the data folder, initialize `SqliteClaimRepository`, create a single daemon DB executor, discover optional providers, register the service at normal priority, register the join listener, and use `Bukkit.getScheduler().runTask` as the main-thread executor. On initialization failure, log the exception and disable without registering partial services.
 
-- [ ] **Step 3: Write factual README, AGENTS.md, and community files**
+- [x] **Step 3: Write factual README, AGENTS.md, and community files**
 
 Document only the implemented automatic delivery and service API. Include exact build/run commands, provider soft dependencies, no-message fail-closed behavior, and no generated `run/` state. Do not advertise commands or GUI behavior.
 
-- [ ] **Step 4: Run the plugin compile and startup smoke**
+- [x] **Step 4: Run the plugin compile and startup smoke**
 
 Run `cd claim && ./gradlew clean jar --no-daemon`, then `./gradlew runServer --no-daemon` long enough to observe `ChestClaim enabled` and a registered service. Expected: plugin JAR builds and Paper enables the plugin without any protection plugin installed.
 
@@ -234,14 +234,14 @@ Run `cd claim && ./gradlew clean jar --no-daemon`, then `./gradlew runServer --n
 **Files:**
 - Modify: any implementation/test/docs files required by verification findings only.
 
-- [ ] **Step 1: Run the full quality gate**
+- [x] **Step 1: Run the full quality gate**
 
 Run `cd claim && ./gradlew clean check --no-daemon`. Expected: tests, Spotless, Checkstyle, PMD, and SpotBugs all pass.
 
-- [ ] **Step 2: Verify repository cleanliness and generated-state exclusions**
+- [x] **Step 2: Verify repository cleanliness and generated-state exclusions**
 
 Run `git -C /home/jlo/dev/chestclaim diff --check` and inspect `git status --short`. Expected: no whitespace errors, only the intended `claim/` and `docs/superpowers/{specs,plans}/` paths changed, and no `claim/run/`, `build/`, `.gradle/`, or credentials are staged.
 
-- [ ] **Step 3: Review against the spec**
+- [x] **Step 3: Review against the spec**
 
 Check every FR/NFR and confirm that unresolved owner paths throw before repository writes and emit no player message, optional providers do not block enable, leftovers remain persisted, and all JDBC is off-thread. Fix any mismatch, rerun the focused test, then rerun `clean check`.

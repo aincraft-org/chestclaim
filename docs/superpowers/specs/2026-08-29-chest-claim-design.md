@@ -1,4 +1,6 @@
-# Chest Claim Design
+## Status
+
+> **APPROVED 2026-08-29** — explicit human approval via in-session selection of "Approve — verify and commit". Implementation (`claim/`) built, verified (`./gradlew clean check` exit 0; Paper 26.2 startup smoke showed `ChestClaim enabled; protection providers: []`), and committed as `9c21c25`. Plan checkboxes ticked to match.
 
 ## Goal
 
