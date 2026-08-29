@@ -8,7 +8,7 @@ import org.aincraft.chestclaim.claim.PendingClaim;
 /** Synchronous persistence boundary; callers must invoke it off the server thread. */
 public interface ClaimRepository extends AutoCloseable {
 
-  /** Creates the durable claim schema if it does not exist. */
+  /** Applies the consumer-owned durable claim schema migrations. */
   void initialize() throws SQLException;
 
   /** Enqueues one serialized item for a player. */

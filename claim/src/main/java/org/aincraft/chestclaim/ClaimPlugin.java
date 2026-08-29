@@ -42,8 +42,7 @@ public final class ClaimPlugin extends JavaPlugin {
     try {
       Path databasePath =
           getDataFolder().toPath().resolve(getConfig().getString("database.file", "claim.db"));
-      repository = new SqliteClaimRepository(databasePath);
-      initializeRepository();
+      initializeRepository(databasePath);
       List<ProtectionProvider> providers =
           ProtectionProviderDiscovery.discover(
               getServer().getPluginManager(),
@@ -89,10 +88,11 @@ public final class ClaimPlugin extends JavaPlugin {
     closeResources();
   }
 
-  private void initializeRepository() throws SQLException {
+  private void initializeRepository(Path databasePath) throws SQLException {
     Future<Void> initialization =
         databaseExecutor.submit(
             () -> {
+              repository = new SqliteClaimRepository(databasePath);
               repository.initialize();
               return null;
             });

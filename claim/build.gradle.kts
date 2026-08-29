@@ -25,6 +25,21 @@ version = providers.gradleProperty("buildVersion")
 description = "Durable automatic rewards and protected-chest returns for Paper servers"
 
 repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "utilitiesGitHubPackages"
+                url = uri("https://maven.pkg.github.com/mintychochip/Utilities")
+                credentials {
+                    username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                    password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+        filter {
+            includeGroup("org.aincraft")
+        }
+    }
     maven {
         name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
@@ -39,13 +54,10 @@ val shade = configurations.create("shade") {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.2.build.+")
-    compileOnly("com.zaxxer:HikariCP:7.0.2")
-    add(shade.name, "com.zaxxer:HikariCP:7.0.2") {
-        isTransitive = false
-    }
+    implementation("org.aincraft:utilities-db-sql:2026.08.27")
+    add(shade.name, "org.aincraft:utilities-db-sql:2026.08.27")
 
     testImplementation("io.papermc.paper:paper-api:26.2.build.+")
-    testImplementation("com.zaxxer:HikariCP:7.0.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.mockito:mockito-core:5.18.0")
