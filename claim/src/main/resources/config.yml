@@ -3,6 +3,4 @@ database:
 
 protection-providers:
   order:
-    - lwc
     - bolt
-    - lockettepro

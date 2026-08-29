@@ -28,12 +28,12 @@ claimService.returnLockedChest(protectedBlock, chestItem);
 
 ## Protection providers
 
-LWC, Bolt, and LockettePro are optional soft dependencies. Configure their lookup order in `config.yml`; the default is LWC, then Bolt, then LockettePro. ChestClaim still enables when none of them is installed, but protected-chest returns fail closed until an owner can be resolved.
+LWC, Bolt, and LockettePro are optional soft dependencies. The shipped default selects Bolt; add another supported provider ID only when you intentionally want that provider inspected. ChestClaim still enables when none of them is installed, but protected-chest returns fail closed until an owner can be resolved.
 
 ## Configuration
 
 - `database.file` — SQLite file name stored under the plugin data folder.
-- `protection-providers.order` — ordered optional provider IDs: `lwc`, `bolt`, and `lockettepro`.
+- `protection-providers.order` — provider IDs to inspect; the shipped default is `bolt`, while `lwc` and `lockettepro` remain available when explicitly listed.
 
 ## Verification
 
