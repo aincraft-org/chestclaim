@@ -2,6 +2,7 @@ import com.github.spotbugs.snom.SpotBugsTask
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.zip.ZipFile
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.language.jvm.tasks.ProcessResources
@@ -31,7 +32,9 @@ repositories {
                 name = "utilitiesGitHubPackages"
                 url = uri("https://maven.pkg.github.com/mintychochip/Utilities")
                 credentials {
-                    username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                    username = project.findProperty("gpr.user") as String?
+                        ?: System.getenv("GITHUB_ACTOR")
+                        ?: System.getenv("USERNAME")
                     password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
                 }
             }
@@ -47,21 +50,15 @@ repositories {
     mavenCentral()
 }
 
-val shade = configurations.create("shade") {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-}
-
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.2.build.+")
     implementation("org.aincraft:utilities-db-sql:2026.08.27")
-    add(shade.name, "org.aincraft:utilities-db-sql:2026.08.27")
 
     testImplementation("io.papermc.paper:paper-api:26.2.build.+")
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.mockito:mockito-core:5.18.0")
-    testRuntimeOnly("org.xerial:sqlite-jdbc:3.53.2.1")
+    implementation("org.xerial:sqlite-jdbc:3.53.2.1")
 }
 
 java {
@@ -126,7 +123,26 @@ tasks.named("check") {
 
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from(shade.map { file -> if (file.isDirectory) file else zipTree(file) })
+    from(configurations.runtimeClasspath.get().map { file -> if (file.isDirectory) file else zipTree(file) })
+}
+
+tasks.register("verifyRuntimePackaging") {
+    dependsOn(tasks.jar)
+    doLast {
+        val archive = ZipFile(tasks.jar.get().archiveFile.get().asFile)
+        archive.use {
+            listOf(
+                "com/zaxxer/hikari/HikariDataSource.class",
+                "org/jdbi/v3/core/Jdbi.class",
+                "org/flywaydb/core/Flyway.class",
+                "org/sqlite/JDBC.class",
+            ).forEach { entry ->
+                check(archive.getEntry(entry) != null) {
+                    "ChestClaim jar is missing runtime class $entry"
+                }
+            }
+        }
+    }
 }
 
 tasks.test {

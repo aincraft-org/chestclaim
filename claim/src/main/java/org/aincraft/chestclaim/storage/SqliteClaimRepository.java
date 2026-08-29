@@ -39,7 +39,7 @@ public final class SqliteClaimRepository implements ClaimRepository {
     Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
     SqlDatabase openedDatabase = null;
     try {
-      openedDatabase = SqlDatabase.create(config);
+      openedDatabase = SqlDatabase.create(config, "classpath:chestclaim-no-runtime-migrations");
       ClaimRepositoryDao openedDao = openedDatabase.onDemand(ClaimRepositoryDao.class);
       database = openedDatabase;
       dao = openedDao;
