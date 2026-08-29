@@ -42,7 +42,7 @@
 
 - [x] **Step 1: Create the settings and pinned build configuration**
 
-Use `rootProject.name = "claim"`, Java 25, Paper API `io.papermc.paper:paper-api:26.2.build.+`, run-paper 3.1.0, Spotless 8.10.0/google-java-format 1.36.1, Checkstyle 13.11.0, PMD 7.26.0, SpotBugs 6.5.10/4.9.7, JUnit 5, and HikariCP 7.0.2. Configure `jar` to include HikariCP without including compile-only Paper or provider APIs. Configure `check` to depend on all static-analysis tasks and `runServer` for Paper 26.2.
+Use `rootProject.name = "claim"`, Java 25, Paper API `io.papermc.paper:paper-api:26.2.build.+`, run-paper 3.1.0, Spotless 8.10.0/google-java-format 1.36.1, Checkstyle 13.11.0, PMD 7.26.0, SpotBugs 6.5.10/4.9.7, JUnit 5, and HikariCP 7.0.2. Configure `jar` to include HikariCP without including compile-only Paper or provider APIs. Configure `check` to depend on all static-analysis tasks and `runServer` for Paper 26.2; `runServer` downloads pinned Bolt 1.2.22 from Modrinth for local provider testing.
 
 - [x] **Step 2: Add plugin metadata and Bolt default configuration**
 

@@ -128,6 +128,10 @@ tasks.test {
 tasks {
     runServer {
         minecraftVersion("26.2")
+        // Pinned Modrinth version ID for Bolt 1.2.22, compatible with Paper 26.2.
+        downloadPlugins {
+            modrinth("bolt", "j3QcPcdy")
+        }
         val eula = layout.projectDirectory.file("run/eula.txt")
         doFirst {
             // run-paper does not manage the EULA; a fresh server directory refuses to boot until accepted.

@@ -29,6 +29,7 @@ claimService.returnLockedChest(protectedBlock, chestItem);
 ## Protection providers
 
 LWC, Bolt, and LockettePro are optional soft dependencies. The shipped default selects Bolt; add another supported provider ID only when you intentionally want that provider inspected. ChestClaim still enables when none of them is installed, but protected-chest returns fail closed until an owner can be resolved.
+The JPenilla run-paper `runServer` task downloads Bolt 1.2.22 for local provider testing.
 
 ## Configuration
 
