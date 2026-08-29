@@ -128,5 +128,28 @@ tasks.test {
 tasks {
     runServer {
         minecraftVersion("26.2")
+        val eula = layout.projectDirectory.file("run/eula.txt")
+        doFirst {
+            // run-paper does not manage the EULA; a fresh server directory refuses to boot until accepted.
+            eula.asFile.apply {
+                parentFile.mkdirs()
+                if (!exists()) {
+                    writeText("#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\neula=true\n")
+                } else if (!readText().contains("eula=true")) {
+                    appendText("\neula=true\n")
+                }
+            }
+            // Optional dev port override for parallel servers: ./gradlew runServer -PserverPort=25566
+            val portOverride = providers.gradleProperty("serverPort").orNull
+            if (portOverride != null) {
+                val serverProperties = layout.projectDirectory.file("run/server.properties")
+                val lines = serverProperties.asFile.run {
+                    if (exists()) readLines().toMutableList() else mutableListOf()
+                }
+                val index = lines.indexOfFirst { it.startsWith("server-port=") }
+                if (index >= 0) lines[index] = "server-port=$portOverride" else lines.add("server-port=$portOverride")
+                serverProperties.asFile.writeText(lines.joinToString("\n") + "\n")
+            }
+        }
     }
 }
